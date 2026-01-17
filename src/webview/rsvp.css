@@ -27,11 +27,14 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  white-space: pre;
+  white-space: normal;
   user-select: none;
   -webkit-user-select: none;
   max-width: 90%;
-  word-wrap: break-word;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .orp {
@@ -72,14 +75,17 @@ progress::-webkit-progress-value {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--vscode-editor-background, rgba(0, 0, 0, 0.7));
+  background: var(--vscode-editor-background, rgba(0, 0, 0, 0.8));
   padding: 10px 15px;
   border-radius: 5px;
-  font-size: 1rem;
-  opacity: 0;
-  transition: opacity 0.5s;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  transition: opacity 0.3s;
   pointer-events: none;
-  border: 1px solid var(--vscode-panel-border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--vscode-panel-border, rgba(255, 255, 255, 0.2));
+  z-index: 10;
+  min-width: 200px;
+  text-align: center;
 }
 
 .hud.visible {

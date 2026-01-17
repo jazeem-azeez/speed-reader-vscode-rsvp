@@ -67,7 +67,7 @@
             "explorer/context": [
                 {
                     "command": "rsvp.startFromFile",
-                    "when": "resourceExtname == .md || resourceExtname == .markdown || resourceExtname == .txt || resourceExtname == .pdf || resourceExtname == .epub",
+                    "when": "explorerResourceIsFolder == false && (resourceExtname == .md || resourceExtname == .markdown || resourceExtname == .txt || resourceExtname == .pdf || resourceExtname == .epub)",
                     "group": "navigation"
                 }
             ]

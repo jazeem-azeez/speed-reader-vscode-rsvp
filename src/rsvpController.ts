@@ -269,13 +269,17 @@ export class RsvpController implements vscode.WebviewViewProvider {
         return;
       }
       const chunk = this._chunks[this._currentIndex];
+      if (!chunk || chunk.trim().length === 0) {
+        this._currentIndex++;
+        return;
+      }
       const highlighted = addORPHighlight(chunk);
       const message: DisplayChunkMessage = {
         command: 'displayChunk',
-        chunk: highlighted,
-        progress: (this._currentIndex / this._chunks.length) * 100,
+        chunk: highlighted || '',
+        progress: this._chunks.length > 0 ? (this._currentIndex / this._chunks.length) * 100 : 0,
         wpm: this._wpm,
-        remaining: this._chunkSize > 0 ? Math.ceil((this._chunks.length - this._currentIndex) / (this._wpm / 60 / this._chunkSize)) : 0
+        remaining: this._chunkSize > 0 && this._wpm > 0 ? Math.ceil((this._chunks.length - this._currentIndex) / (this._wpm / 60 / this._chunkSize)) : 0
       };
       this.sendMessage(message);
       this._currentIndex++;
