@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${csp}
+  <link href="${cssUri}" rel="stylesheet">
+  <style>
+    body { font-family: ${fontFamily}; }
+  </style>
+</head>
+<body>
+  <div id="container" class="container">
+    <div id="word" class="word-area" role="main" aria-live="polite" aria-atomic="true"></div>
+    <progress id="progress" value="0" max="100" aria-label="Reading progress"></progress>
+    <div id="hud" class="hud" role="status" aria-live="polite"></div>
+  </div>
+  <script src="${jsUri}"></script>
+</body>
+</html>
+

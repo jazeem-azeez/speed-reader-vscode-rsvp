@@ -1,0 +1,141 @@
+{
+  "name": "rsvp-speed-reader",
+  "displayName": "RSVP Speed Reader",
+  "description": "Rapid Serial Visual Presentation speed reading for Markdown, text, PDF, and EPUB files with ORP highlighting, keyboard controls, and performance-optimized processing.",
+  "version": "0.1.0",
+  "publisher": "rsvp-speed-reader",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/rsvp-speed-reader"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/rsvp-speed-reader/issues"
+  },
+  "homepage": "https://github.com/yourusername/rsvp-speed-reader#readme",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": [
+    "speed reading",
+    "rsvp",
+    "reading",
+    "productivity",
+    "pdf",
+    "epub",
+    "markdown"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown",
+    "onLanguage:plaintext",
+    "onCommand:rsvp.start",
+    "onCommand:rsvp.startFromFile",
+    "onWebviewView:rsvp.webview"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "rsvp.start",
+        "title": "RSVP: Start Speed Reading"
+      },
+      {
+        "command": "rsvp.stop",
+        "title": "RSVP: Stop Speed Reading"
+      },
+      {
+        "command": "rsvp.toggle",
+        "title": "RSVP: Toggle Speed Reading"
+      },
+      {
+        "command": "rsvp.startFromFile",
+        "title": "Speed Read with RSVP"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "rsvp.toggle",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r",
+        "when": "editorLangId == markdown || editorLangId == plaintext || resourceExtname == .pdf || resourceExtname == .epub"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "rsvp.startFromFile",
+          "when": "resourceExtname == .md || resourceExtname == .markdown || resourceExtname == .txt || resourceExtname == .pdf || resourceExtname == .epub",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "RSVP Speed Reader",
+      "properties": {
+        "rsvp.defaultWPM": {
+          "type": "number",
+          "default": 450,
+          "minimum": 100,
+          "maximum": 1200,
+          "description": "Default words per minute for speed reading"
+        },
+        "rsvp.wordsPerChunk": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Number of words to display at once"
+        },
+        "rsvp.fontFamily": {
+          "type": "string",
+          "default": "monospace",
+          "description": "Font family for the reading display"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "rsvp-view-container",
+          "title": "RSVP",
+          "icon": "media/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "rsvp-view-container": [
+        {
+          "id": "rsvp.webview",
+          "name": "Speed Reader",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./ && tsc -p ./tsconfig.test.json",
+    "watch": "tsc -watch -p ./",
+    "build": "node esbuild.config.js",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "pdf-parse": "^1.1.1",
+    "epubjs": "^0.3.88"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3",
+    "esbuild": "^0.19.0",
+    "@vscode/vsce": "^2.22.0",
+    "@vscode/test-electron": "^2.3.0",
+    "@types/mocha": "^10.0.0",
+    "@types/glob": "^8.0.0",
+    "mocha": "^10.0.0",
+    "glob": "^10.0.0"
+  }
+}
+

@@ -1,0 +1,15 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vscode-extension.iml
+*.vsix
+.DS_Store
+*.code-workspace
+tsconfig.json
+esbuild.config.js
+**/*.map
+**/*.ts
+!out/**/*.js
+
