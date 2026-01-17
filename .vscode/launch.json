@@ -11,7 +11,10 @@
       "outFiles": [
         "${workspaceFolder}/out/**/*.js"
       ],
-      "preLaunchTask": "${defaultBuildTask}"
+      "preLaunchTask": "${defaultBuildTask}",
+      "env": {
+        "NODE_OPTIONS": "--no-deprecation"
+      }
     },
     {
       "name": "Run Extension (No Build)",
@@ -22,7 +25,10 @@
       ],
       "outFiles": [
         "${workspaceFolder}/out/**/*.js"
-      ]
+      ],
+      "env": {
+        "NODE_OPTIONS": "--no-deprecation"
+      }
     },
     {
       "name": "Extension Tests",
@@ -35,7 +41,10 @@
       "outFiles": [
         "${workspaceFolder}/out/test/**/*.js"
       ],
-      "preLaunchTask": "${defaultBuildTask}"
+      "preLaunchTask": "${defaultBuildTask}",
+      "env": {
+        "NODE_OPTIONS": "--no-deprecation"
+      }
     }
   ]
 }
