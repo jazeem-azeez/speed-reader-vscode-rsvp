@@ -4,16 +4,122 @@
     const wordElement = document.getElementById('word');
     const progressElement = document.getElementById('progress');
     const hudElement = document.getElementById('hud');
+    const playButton = document.getElementById('play-button');
+    const playPauseButton = document.getElementById('play-pause');
+    const fileList = document.getElementById('file-list');
+    const fileListItems = document.getElementById('file-list-items');
+    const toggleFileListBtn = document.getElementById('toggle-file-list');
+    const prevFileBtn = document.getElementById('prev-file');
+    const nextFileBtn = document.getElementById('next-file');
+    const rewindBtn = document.getElementById('rewind-btn');
+    const skipBtn = document.getElementById('skip-btn');
+    const speedUpBtn = document.getElementById('speed-up');
+    const speedDownBtn = document.getElementById('speed-down');
+    const speedDisplay = document.getElementById('speed-display');
+    const autoPlayCheckbox = document.getElementById('auto-play');
+    
     let helpTimeout;
+    let currentFileIndex = 0;
+    let files = [];
+    let isReading = false;
+
+    // Event listeners for controls
+    if (playButton) {
+        playButton.addEventListener('click', () => {
+            vscode.postMessage({ command: 'play' });
+        });
+    }
+
+    if (playPauseButton) {
+        playPauseButton.addEventListener('click', () => {
+            vscode.postMessage({ command: 'togglePause' });
+        });
+    }
+
+    if (toggleFileListBtn) {
+        toggleFileListBtn.addEventListener('click', () => {
+            if (fileList) {
+                fileList.classList.toggle('collapsed');
+                toggleFileListBtn.textContent = fileList.classList.contains('collapsed') ? '+' : '−';
+            }
+        });
+    }
+
+    if (prevFileBtn) {
+        prevFileBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'prevFile' });
+        });
+    }
+
+    if (nextFileBtn) {
+        nextFileBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'nextFile' });
+        });
+    }
+
+    if (rewindBtn) {
+        rewindBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'rewind' });
+        });
+    }
+
+    if (skipBtn) {
+        skipBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'skip' });
+        });
+    }
+
+    if (speedUpBtn) {
+        speedUpBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'speedUp' });
+        });
+    }
+
+    if (speedDownBtn) {
+        speedDownBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'speedDown' });
+        });
+    }
+
+    if (autoPlayCheckbox) {
+        autoPlayCheckbox.addEventListener('change', () => {
+            vscode.postMessage({ command: 'toggleAutoPlay' });
+        });
+    }
+
     window.addEventListener('message', (event) => {
         const message = event.data;
         switch (message.command) {
             case 'displayChunk':
                 if (wordElement && progressElement && hudElement) {
+                    // Apply chunk type styling
+                    wordElement.className = 'word-area';
+                    if (message.chunkType === 'title') {
+                        if (message.chunkLevel === 1) {
+                            wordElement.classList.add('chunk-title-h1');
+                        } else if (message.chunkLevel === 2) {
+                            wordElement.classList.add('chunk-title-h2');
+                        } else if (message.chunkLevel === 3) {
+                            wordElement.classList.add('chunk-title-h3');
+                        } else {
+                            wordElement.classList.add('chunk-title-h1'); // Default for other levels
+                        }
+                    }
+                    
                     wordElement.innerHTML = message.chunk;
                     progressElement.value = message.progress;
                     hudElement.innerHTML = `${message.wpm} wpm • ~${message.remaining} min left`;
                     hudElement.classList.add('visible');
+                    
+                    // Hide play button when reading
+                    if (playButton) {
+                        playButton.classList.remove('visible');
+                    }
+                    if (playPauseButton) {
+                        playPauseButton.textContent = '⏸';
+                    }
+                    isReading = true;
+                    
                     if (helpTimeout) {
                         clearTimeout(helpTimeout);
                     }
@@ -25,14 +131,32 @@
             case 'stop':
                 if (wordElement && progressElement) {
                     wordElement.innerHTML = '';
+                    wordElement.className = 'word-area';
                     progressElement.value = 0;
                 }
                 if (hudElement) {
                     hudElement.classList.remove('visible');
                 }
+                // Show play button when stopped
+                if (playButton) {
+                    playButton.classList.add('visible');
+                }
+                if (playPauseButton) {
+                    playPauseButton.textContent = '▶';
+                }
+                isReading = false;
                 break;
             case 'updateWpm':
-                // Handled in displayChunk
+                if (speedDisplay) {
+                    speedDisplay.textContent = `${message.wpm} wpm`;
+                }
+                // Update play/pause button state
+                if (playPauseButton) {
+                    if (message.isPlaying !== undefined) {
+                        playPauseButton.textContent = message.isPlaying ? '⏸' : '▶';
+                        isReading = message.isPlaying;
+                    }
+                }
                 break;
             case 'showHelp':
                 if (hudElement) {
@@ -46,8 +170,46 @@
                     }, 4000);
                 }
                 break;
+            case 'fileList':
+                files = message.files || [];
+                currentFileIndex = message.currentIndex || 0;
+                renderFileList();
+                break;
+            case 'updateFileProgress':
+                if (files[message.fileIndex] !== undefined) {
+                    files[message.fileIndex].progress = message.progress;
+                    renderFileList();
+                }
+                break;
+            case 'selectFile':
+                currentFileIndex = message.fileIndex;
+                renderFileList();
+                break;
         }
     });
+
+    function renderFileList() {
+        if (!fileListItems) return;
+        
+        fileListItems.innerHTML = '';
+        
+        files.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = index === currentFileIndex ? 'active' : '';
+            li.innerHTML = `
+                <span class="file-name">${file.name}</span>
+                ${file.progress !== undefined ? `<span class="file-progress">${Math.round(file.progress)}%</span>` : ''}
+            `;
+            li.addEventListener('click', () => {
+                vscode.postMessage({ command: 'selectFile', fileIndex: index });
+            });
+            fileListItems.appendChild(li);
+        });
+        
+        // Always show file list (don't auto-collapse)
+        // File list should be visible by default
+    }
+
     document.addEventListener('keydown', (event) => {
         const key = event.key;
         const shift = event.shiftKey ? 'Shift+' : '';
@@ -70,16 +232,17 @@
             '?': 'toggleHelp',
             'F1': 'toggleHelp'
         };
+
         const command = commandMap[key] || commandMap[`${shift}${key}`];
         if (command) {
             vscode.postMessage({ command });
             event.preventDefault();
         }
     });
+
     // Focus management for accessibility
     if (wordElement) {
         wordElement.setAttribute('tabindex', '0');
         wordElement.focus();
     }
 })();
-//# sourceMappingURL=rsvp.js.map

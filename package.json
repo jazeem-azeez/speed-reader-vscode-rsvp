@@ -31,33 +31,28 @@
     "activationEvents": [
         "onLanguage:markdown",
         "onLanguage:plaintext",
-        "onCommand:rsvp.start",
-        "onCommand:rsvp.startFromFile",
-        "onWebviewView:rsvp.webview"
+        "onCommand:rsvp.speedReadCurrentFile",
+        "onCommand:rsvp.speedReadFile"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "rsvp.start",
-                "title": "RSVP: Start Speed Reading"
+                "command": "rsvp.speedReadCurrentFile",
+                "title": "RSVP: Speed Read Current File"
             },
             {
-                "command": "rsvp.stop",
-                "title": "RSVP: Stop Speed Reading"
+                "command": "rsvp.speedReadFile",
+                "title": "RSVP: Speed Read File/Folder"
             },
             {
-                "command": "rsvp.toggle",
-                "title": "RSVP: Toggle Speed Reading"
-            },
-            {
-                "command": "rsvp.startFromFile",
-                "title": "Speed Read with RSVP"
+                "command": "rsvp.queueFile",
+                "title": "RSVP: Queue File/Folder"
             }
         ],
         "keybindings": [
             {
-                "command": "rsvp.toggle",
+                "command": "rsvp.speedReadCurrentFile",
                 "key": "ctrl+alt+r",
                 "mac": "cmd+alt+r",
                 "when": "editorLangId == markdown || editorLangId == plaintext || resourceExtname == .pdf || resourceExtname == .epub"
@@ -66,8 +61,13 @@
         "menus": {
             "explorer/context": [
                 {
-                    "command": "rsvp.startFromFile",
-                    "when": "explorerResourceIsFolder == false && (resourceExtname == .md || resourceExtname == .markdown || resourceExtname == .txt || resourceExtname == .pdf || resourceExtname == .epub)",
+                    "command": "rsvp.speedReadFile",
+                    "when": "resourceExtname == .md || resourceExtname == .markdown || resourceExtname == .txt || resourceExtname == .pdf || resourceExtname == .epub || explorerResourceIsFolder == true",
+                    "group": "navigation"
+                },
+                {
+                    "command": "rsvp.queueFile",
+                    "when": "resourceExtname == .md || resourceExtname == .markdown || resourceExtname == .txt || resourceExtname == .pdf || resourceExtname == .epub || explorerResourceIsFolder == true",
                     "group": "navigation"
                 }
             ]
@@ -84,35 +84,52 @@
                 },
                 "rsvp.wordsPerChunk": {
                     "type": "number",
-                    "default": 2,
+                    "default": 1,
                     "minimum": 1,
                     "maximum": 5,
-                    "description": "Number of words to display at once"
+                    "description": "Number of words to display at once (1 = traditional RSVP, 2-5 = chunk reading)"
                 },
                 "rsvp.fontFamily": {
                     "type": "string",
                     "default": "monospace",
                     "description": "Font family for the reading display"
+                },
+                "rsvp.bodyFontSize": {
+                    "type": "number",
+                    "default": 48,
+                    "minimum": 24,
+                    "maximum": 120,
+                    "description": "Body text font size in pixels"
+                },
+                "rsvp.titleFontSizeH1": {
+                    "type": "number",
+                    "default": 1.5,
+                    "minimum": 1.0,
+                    "maximum": 3.0,
+                    "description": "H1 title font size multiplier relative to body size"
+                },
+                "rsvp.titleFontSizeH2": {
+                    "type": "number",
+                    "default": 1.3,
+                    "minimum": 1.0,
+                    "maximum": 3.0,
+                    "description": "H2 title font size multiplier relative to body size"
+                },
+                "rsvp.titleFontSizeH3": {
+                    "type": "number",
+                    "default": 1.15,
+                    "minimum": 1.0,
+                    "maximum": 3.0,
+                    "description": "H3 title font size multiplier relative to body size"
+                },
+                "rsvp.titlePauseDuration": {
+                    "type": "number",
+                    "default": 500,
+                    "minimum": 0,
+                    "maximum": 3000,
+                    "description": "Pause duration in milliseconds after title chunks"
                 }
             }
-        },
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "rsvp-view-container",
-                    "title": "RSVP",
-                    "icon": "media/icon.svg"
-                }
-            ]
-        },
-        "views": {
-            "rsvp-view-container": [
-                {
-                    "id": "rsvp.webview",
-                    "name": "Speed Reader",
-                    "type": "webview"
-                }
-            ]
         }
     },
     "scripts": {
