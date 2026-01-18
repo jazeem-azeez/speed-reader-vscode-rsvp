@@ -139,7 +139,8 @@
         "watch": "tsc -watch -p ./",
         "build": "node esbuild.config.js",
         "test": "node ./out/test/runTest.js",
-        "package": "vsce package"
+        "package": "vsce package",
+        "publish": "npm run compile && vsce package"
     },
     "dependencies": {
         "epubjs": "^0.3.88",
