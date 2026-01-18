@@ -2,7 +2,7 @@
 
 All notable changes to the RSVP Speed Reader extension will be documented in this file.
 
-## [0.1.0] - 2024-01-XX
+## [0.1.0] - 2026-01-17
 
 ### Added
 - Initial release of RSVP Speed Reader
